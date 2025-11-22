@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Improvement - Unit Tests</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .test-suite {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-suite h2 {
+            color: #555;
+            margin-top: 0;
+        }
+        .test-case {
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 4px solid #ddd;
+            background-color: #fafafa;
+        }
+        .test-case.pass {
+            border-left-color: #4CAF50;
+            background-color: #e8f5e9;
+        }
+        .test-case.fail {
+            border-left-color: #f44336;
+            background-color: #ffebee;
+        }
+        .test-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .test-result {
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .test-error {
+            color: #d32f2f;
+            font-family: monospace;
+            margin-top: 5px;
+        }
+        .summary {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+        }
+        .summary-item {
+            text-align: center;
+        }
+        .summary-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .summary-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .pass-count { color: #4CAF50; }
+        .fail-count { color: #f44336; }
+        .total-count { color: #2196F3; }
+        .run-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        .run-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>English Improvement Extension - Unit Tests</h1>
+    
+    <button class="run-button" onclick="runAllTests()">Run All Tests</button>
+    
+    <div class="summary" id="summary">
+        <div class="summary-item">
+            <div class="summary-number total-count" id="total">0</div>
+            <div class="summary-label">Total</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-number pass-count" id="passed">0</div>
+            <div class="summary-label">Passed</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-number fail-count" id="failed">0</div>
+            <div class="summary-label">Failed</div>
+        </div>
+    </div>
+    
+    <div id="test-results"></div>
+
+    <script src="wordbook.js"></script>
+    <script src="grammar_engine.js"></script>
+    <script src="content.js"></script>
+    <script>
+
+        const expectedGovernment = wordbook['government'];
+        const expectedTechnology = wordbook['technology'];
+        const expectedPolicy = wordbook['policy'];
+        const expectedPhrase = wordbook['a cappella'];
+
+        // Test Framework
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            suites: []
+        };
+
+        function assertEquals(actual, expected, message) {
+            if (actual === expected) {
+                return { passed: true, message };
+            } else {
+                return {
+                    passed: false,
+                    message,
+                    error: `Expected: "${expected}", Got: "${actual}"`
+                };
+            }
+        }
+
+        function assertTrue(condition, message) {
+            if (condition) {
+                return { passed: true, message };
+            } else {
+                return {
+                    passed: false,
+                    message,
+                    error: `Expected condition to be true`
+                };
+            }
+        }
+
+        function assertContains(text, substring, message) {
+            if (text.includes(substring)) {
+                return { passed: true, message };
+            } else {
+                return {
+                    passed: false,
+                    message,
+                    error: `Expected "${text}" to contain "${substring}"`
+                };
+            }
+        }
+
+        class TestSuite {
+            constructor(name) {
+                this.name = name;
+                this.tests = [];
+            }
+
+            test(name, testFunc) {
+                this.tests.push({ name, func: testFunc });
+            }
+
+            run() {
+                const results = [];
+                for (const test of this.tests) {
+                    try {
+                        const result = test.func();
+                        results.push({ ...result, name: test.name });
+                        testResults.total++;
+                        if (result.passed) {
+                            testResults.passed++;
+                        } else {
+                            testResults.failed++;
+                        }
+                    } catch (error) {
+                        results.push({
+                            name: test.name,
+                            passed: false,
+                            message: test.name,
+                            error: error.message
+                        });
+                        testResults.total++;
+                        testResults.failed++;
+                    }
+                }
+                return results;
+            }
+        }
+
+        // Test Suites
+        function createMatchCaseTests() {
+            const suite = new TestSuite('matchCase Function');
+            
+            suite.test('Lowercase to lowercase', () => {
+                return assertEquals(matchCase('hello', 'world'), 'world', 'Should preserve lowercase');
+            });
+            
+            suite.test('Capitalized to capitalized', () => {
+                return assertEquals(matchCase('Hello', 'world'), 'World', 'Should capitalize first letter');
+            });
+            
+            suite.test('UPPERCASE to UPPERCASE', () => {
+                return assertEquals(matchCase('HELLO', 'world'), 'WORLD', 'Should convert to uppercase');
+            });
+            
+            suite.test('Mixed case preservation', () => {
+                return assertEquals(matchCase('HeLLo', 'world'), 'World', 'Should capitalize first letter for mixed case');
+            });
+            
+            suite.test('Empty string handling', () => {
+                return assertEquals(matchCase('', 'world'), 'world', 'Should return replacement for empty original');
+            });
+            
+            return suite;
+        }
+
+        function createDomFragment(html, callback) {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = html;
+            document.body.appendChild(wrapper);
+            try {
+                return callback(wrapper);
+            } finally {
+                wrapper.remove();
+            }
+        }
+
+        function createAnglishTranslationTests() {
+            const suite = new TestSuite('Anglish Translation');
+            
+            suite.test('Basic word translation', () => {
+                const result = translateToAnglish('government');
+                return assertEquals(result, expectedGovernment, 'Should translate government');
+            });
+            
+            suite.test('Capitalized word translation', () => {
+                const result = translateToAnglish('Government');
+                return assertEquals(result, matchCase('Government', expectedGovernment), 'Should preserve capitalization');
+            });
+            
+            suite.test('Sentence translation with punctuation', () => {
+                const result = translateToAnglish('The government uses technology.');
+                const periodCount = (result.match(/\./g) || []).length;
+                return assertTrue(result.includes(expectedGovernment) && result.includes(expectedTechnology) && periodCount === 1, 'Should translate sentence and preserve punctuation');
+            });
+            
+            suite.test('Punctuation handling - comma', () => {
+                const result = translateToAnglish('Hello, world.');
+                const commaCount = (result.match(/,/g) || []).length;
+                const periodCount = (result.match(/\./g) || []).length;
+                return assertTrue(commaCount === 1 && periodCount === 1, 'Should not duplicate punctuation');
+            });
+            
+            suite.test('Punctuation handling - period', () => {
+                const result = translateToAnglish('This is important.');
+                const periodCount = (result.match(/\./g) || []).length;
+                return assertEquals(periodCount, 1, 'Should have exactly one period');
+            });
+            
+            suite.test('Complex punctuation sequences', () => {
+                const result = translateToAnglish('Well... really?!');
+                return assertEquals((result.match(/\./g) || []).length, 3, 'Should preserve ellipsis');
+            });
+            
+            suite.test('Word not in wordbook', () => {
+                const result = translateToAnglish('xyzabc');
+                return assertEquals(result, 'xyzabc', 'Should leave unknown words unchanged');
+            });
+            
+            suite.test('Mixed translated and untranslated', () => {
+                const result = translateToAnglish('The government and xyzabc');
+                return assertTrue(
+                    result.includes('folkdom') && result.includes('xyzabc'),
+                    'Should translate known words and preserve unknown words'
+                );
+            });
+            
+            suite.test('Plural form - scientists', () => {
+                const result = translateToAnglish('scientists');
+                return assertEquals(result, 'learners', 'Should translate plural forms');
+            });
+            
+            suite.test('Multi-word phrase', () => {
+                const result = translateToAnglish('a cappella');
+                return assertEquals(result, expectedPhrase, 'Should translate multi-word phrase');
+            });
+            
+            return suite;
+        }
+
+        function createSpellingReformTests() {
+            const suite = new TestSuite('Spelling Reform');
+            
+            suite.test('through -> thru', () => {
+                return assertEquals(transformText('through'), 'thru', 'Should reform through');
+            });
+            
+            suite.test('though -> tho', () => {
+                return assertEquals(transformText('though'), 'tho', 'Should reform though');
+            });
+            
+            suite.test('thought -> thawt', () => {
+                return assertEquals(transformText('thought'), 'thawt', 'Should reform thought');
+            });
+            
+            suite.test('tough -> tuff', () => {
+                return assertEquals(transformText('tough'), 'tuff', 'Should reform tough');
+            });
+            
+            suite.test('rough -> ruff', () => {
+                return assertEquals(transformText('rough'), 'ruff', 'Should reform rough');
+            });
+            
+            suite.test('break -> brake', () => {
+                return assertEquals(transformText('break'), 'brake', 'Should reform break');
+            });
+            
+            suite.test('great -> grate', () => {
+                return assertEquals(transformText('great'), 'grate', 'Should reform great');
+            });
+            
+            suite.test('Capitalized Through', () => {
+                return assertEquals(transformText('Through'), 'Thru', 'Should preserve capitalization');
+            });
+            
+            suite.test('UPPERCASE THROUGH', () => {
+                return assertEquals(transformText('THROUGH'), 'THRU', 'Should preserve uppercase');
+            });
+            
+            suite.test('Multiple words in sentence', () => {
+                const result = transformText('I thought through the rough problem');
+                return assertTrue(
+                    result.includes('thawt') && result.includes('thru') && result.includes('ruff'),
+                    'Should reform multiple words'
+                );
+            });
+            
+            return suite;
+        }
+
+        function createGrammarEngineTests() {
+            const suite = new TestSuite('Grammar Engine');
+            
+            suite.test('singulariseThenPluralise - simple plural', () => {
+                const result = singulariseThenPluralise('governments');
+                return assertEquals(result, 'folkdoms', 'Should handle simple plural');
+            });
+            
+            suite.test('pluralise function', () => {
+                const result = pluralise('folkdom');
+                return assertEquals(result, 'folkdoms', 'Should add s for plural');
+            });
+            
+            suite.test('pluralise with y', () => {
+                const result = pluralise('city');
+                return assertEquals(result, 'cities', 'Should convert y to ies');
+            });
+            
+            suite.test('presentContinuous - using', () => {
+                const result = presentContinuous('using');
+                return assertEquals(result, 'brooking', 'Should translate present continuous');
+            });
+            
+            return suite;
+        }
+
+        function createEdgeCaseTests() {
+            const suite = new TestSuite('Edge Cases');
+            
+            suite.test('Empty string', () => {
+                const result = translateToAnglish('');
+                return assertEquals(result, '', 'Should handle empty string');
+            });
+            
+            suite.test('Only punctuation', () => {
+                const result = translateToAnglish('...');
+                return assertEquals(result, '...', 'Should handle only punctuation');
+            });
+            
+            suite.test('Multiple spaces', () => {
+                const result = translateToAnglish('hello  world');
+                return assertTrue(result.includes('hello') && result.includes('world'), 'Should handle multiple spaces');
+            });
+            
+            suite.test('Leading/trailing spaces', () => {
+                const result = translateToAnglish(' hello ');
+                return assertTrue(result.includes('hello'), 'Should handle leading/trailing spaces');
+            });
+            
+            suite.test('Numbers', () => {
+                const result = translateToAnglish('The government has 123 members');
+                return assertTrue(result.includes('123'), 'Should preserve numbers');
+            });
+            
+            suite.test('Special characters', () => {
+                const result = translateToAnglish('government@example.com');
+                return assertTrue(result.includes('@'), 'Should preserve special characters');
+            });
+            
+            return suite;
+        }
+
+        function createDomIntegrationTests() {
+            const suite = new TestSuite('DOM Integration');
+
+            suite.test('Translation/resets within container', () => {
+                return createDomFragment('<p id="p">The government policy works.</p>', (root) => {
+                    applyAnglishTranslation(root);
+                    const translated = root.querySelector('#p').textContent;
+                    const containsTranslations = translated.toLowerCase().includes(expectedGovernment) && translated.toLowerCase().includes(expectedPolicy);
+                    revertAnglishTranslation(root);
+                    const reverted = root.querySelector('#p').textContent;
+                    return assertTrue(containsTranslations && reverted === 'The government policy works.', 'DOM translation or revert failed');
+                });
+            });
+
+            suite.test('Hyperlink text restored exactly', () => {
+                return createDomFragment('<p>Visit <a id="link" href="#">Government policy</a> today.</p>', (root) => {
+                    applyAnglishTranslation(root);
+                    const linkText = root.querySelector('#link').textContent;
+                    const translated = linkText.toLowerCase().includes(expectedGovernment) && linkText.toLowerCase().includes(expectedPolicy);
+                    revertAnglishTranslation(root);
+                    const reverted = root.querySelector('#link').textContent;
+                    return assertTrue(translated && reverted === 'Government policy', 'Hyperlink text not reverted correctly');
+                });
+            });
+
+            suite.test('Punctuation preserved in DOM nodes', () => {
+                return createDomFragment('<p id="p">Hello, world.</p>', (root) => {
+                    applyAnglishTranslation(root);
+                    const after = root.querySelector('#p').textContent;
+                    const commas = (after.match(/,/g) || []).length;
+                    const periods = (after.match(/\./g) || []).length;
+                    revertAnglishTranslation(root);
+                    return assertTrue(commas === 1 && periods === 1, 'Punctuation duplication in DOM');
+                });
+            });
+
+            return suite;
+        }
+
+        function runAllTests() {
+            testResults = { total: 0, passed: 0, failed: 0, suites: [] };
+            
+            const suites = [
+                createMatchCaseTests(),
+                createAnglishTranslationTests(),
+                createSpellingReformTests(),
+                createGrammarEngineTests(),
+                createEdgeCaseTests(),
+                createDomIntegrationTests()
+            ];
+            
+            const resultsContainer = document.getElementById('test-results');
+            resultsContainer.innerHTML = '';
+            
+            for (const suite of suites) {
+                const results = suite.run();
+                testResults.suites.push({ name: suite.name, results });
+                renderSuite(suite.name, results, resultsContainer);
+            }
+            
+            updateSummary();
+        }
+
+        function renderSuite(suiteName, results, container) {
+            const suiteDiv = document.createElement('div');
+            suiteDiv.className = 'test-suite';
+            
+            const title = document.createElement('h2');
+            title.textContent = suiteName;
+            suiteDiv.appendChild(title);
+            
+            for (const result of results) {
+                const testDiv = document.createElement('div');
+                testDiv.className = `test-case ${result.passed ? 'pass' : 'fail'}`;
+                
+                const testName = document.createElement('div');
+                testName.className = 'test-name';
+                testName.textContent = `${result.passed ? '✓' : '✗'} ${result.name}`;
+                testDiv.appendChild(testName);
+                
+                if (result.message) {
+                    const testMessage = document.createElement('div');
+                    testMessage.className = 'test-result';
+                    testMessage.textContent = result.message;
+                    testDiv.appendChild(testMessage);
+                }
+                
+                if (result.error) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'test-error';
+                    errorDiv.textContent = result.error;
+                    testDiv.appendChild(errorDiv);
+                }
+                
+                suiteDiv.appendChild(testDiv);
+            }
+            
+            container.appendChild(suiteDiv);
+        }
+
+        function updateSummary() {
+            document.getElementById('total').textContent = testResults.total;
+            document.getElementById('passed').textContent = testResults.passed;
+            document.getElementById('failed').textContent = testResults.failed;
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', runAllTests);
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,24 @@
+THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
+
+This project incorporates components from the following projects:
+
+================================================================================
+
+Anglish Translator
+https://github.com/Bark-fa/Anglish-Translator
+
+License: Mozilla Public License Version 2.0 (MPL-2.0)
+
+The following files are licensed under MPL-2.0:
+- wordbook.js
+- grammar_engine.js
+
+These files retain their original MPL-2.0 license as required.
+A copy of the MPL-2.0 license can be found at: http://mozilla.org/MPL/2.0/
+
+Per MPL-2.0 Section 3.3, these files are included as part of a Larger Work.
+The MPL-2.0 licensed files remain governed by MPL-2.0, while the rest of the
+project is licensed under the MIT License.
+
+================================================================================
+

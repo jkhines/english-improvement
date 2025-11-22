@@ -1,0 +1,36 @@
+{
+  "name": "english-improvement",
+  "version": "1.0.0",
+  "description": "Chrome extension for English improvement tools",
+  "scripts": {
+    "build": "rimraf dist && tsc && npm run copy-assets",
+    "copy-assets": "copyfiles -u 1 wordbook.js grammar_engine.js dist",
+    "watch": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug"
+  },
+  "keywords": [
+    "chrome-extension",
+    "spelling-reform",
+    "anglish"
+  ],
+  "author": "jkhines",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/chrome": "^0.1.31",
+    "@types/node": "^24.10.1",
+    "http-server": "^14.1.1",
+    "jest": "^30.2.0",
+    "jsdom": "^22.1.0",
+    "copyfiles": "^2.4.1",
+    "rimraf": "^6.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

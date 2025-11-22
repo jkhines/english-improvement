@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E2E Test Page - English Improvement</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .test-section[data-test-id] {
+            border-left: 4px solid #007acc;
+        }
+    </style>
+</head>
+<body>
+    <h1>English Improvement Extension E2E Test Page</h1>
+    
+    <div class="test-section" data-test-id="spelling-reform-basic">
+        <h2>Spelling Reform - Basic Words</h2>
+        <p id="spelling-basic">I thought through the rough night, though it was tough. I brought enough food.</p>
+    </div>
+    
+    <div class="test-section" data-test-id="spelling-reform-complex">
+        <h2>Spelling Reform - Complex Sentences</h2>
+        <p id="spelling-complex">The breakthrough was great. He broke through the obstacles thoroughly.</p>
+    </div>
+    
+    <div class="test-section" data-test-id="spelling-reform-links">
+        <h2>Spelling Reform - Links</h2>
+        <p>Visit <a href="#test" id="spelling-link">through the rough terrain</a> for more information.</p>
+    </div>
+    
+    <div class="test-section" data-test-id="anglish-basic">
+        <h2>Anglish Translation - Basic Words</h2>
+        <p id="anglish-basic">The government announced a new policy. Scientists use technology to study nature.</p>
+    </div>
+    
+    <div class="test-section" data-test-id="anglish-complex">
+        <h2>Anglish Translation - Complex Sentences</h2>
+        <p id="anglish-complex">Education is important for society. Universities provide opportunities for research.</p>
+    </div>
+    
+    <div class="test-section" data-test-id="anglish-links">
+        <h2>Anglish Translation - Links</h2>
+        <p>Learn about <a href="#test" id="anglish-link">government policy</a> and technology.</p>
+    </div>
+    
+    <div class="test-section" data-test-id="mixed-content">
+        <h2>Mixed Content</h2>
+        <p id="mixed-content">Although the journey was difficult, they thought it was important. The government policy helped.</p>
+    </div>
+    
+    <div class="test-section" data-test-id="skip-elements">
+        <h2>Skip Elements (Should Not Transform)</h2>
+        <code>through thought rough</code>
+        <pre>through thought rough</pre>
+        <textarea>through thought rough</textarea>
+        <script>const test = "through thought rough";</script>
+    </div>
+</body>
+</html>
+
