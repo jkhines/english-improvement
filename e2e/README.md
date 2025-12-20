@@ -69,3 +69,4 @@ npm run test:e2e:ui
 
 The tests use `e2e-test.html` in the project root, which contains test cases with specific IDs for reliable element selection.
 
+
